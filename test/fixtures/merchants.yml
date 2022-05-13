@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+m1:
+  name: Sorocaba Phones
+  email: MyString
+  cif: MyString
+
+m2:
+  name: Elisa Shoes
+  email: MyString
+  cif: MyString

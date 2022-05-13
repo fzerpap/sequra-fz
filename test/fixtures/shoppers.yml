@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+s1:
+  name: Peter Parra
+  email: MyString
+  nif: MyString
+
+s2:
+  name: Joseph Viera
+  email: MyString
+  nif: MyString

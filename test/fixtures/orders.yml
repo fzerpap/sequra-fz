@@ -1,0 +1,49 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+o1:
+  amount: 49.99
+  completed_at: 2022-05-12 16:53:28
+  shopper: s1
+  merchant: m1
+
+o2:
+  amount: 55.00
+  completed_at: 2022-05-09 16:53:28
+  shopper: s2
+  merchant: m1
+
+o3:
+  amount: 299.99
+  completed_at: 2022-05-10 16:53:28
+  shopper: s1
+  merchant: m1
+
+o4:
+  amount: 400.00
+  completed_at: 2022-05-15 16:53:28
+  shopper: s1
+  merchant: m1
+
+o5:
+  amount: 100.00
+  completed_at: 2022-04-15 16:53:28
+  shopper: s1
+  merchant: m1
+
+o6:
+  amount: 1500.00
+  completed_at: 
+  shopper: s2
+  merchant: m1
+
+o7:
+  amount: 100.00
+  completed_at: 2022-05-13 16:53:28
+  shopper: s1
+  merchant: m2
+
+o8:
+  amount: 1000.00
+  completed_at: 2022-05-15 16:53:28
+  shopper: s1
+  merchant: m2
