@@ -6652,3 +6652,510 @@ DisburseTest: test_calculate_calculate_disbursements_without_orders
   [1m[36mDisburse Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
   [1m[36mOrder Load (0.4ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (3.8ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (3.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.1ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (17.5ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 13:56:04.872771', '2022-05-15 13:56:04.872771'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 13:56:04.872771', '2022-05-15 13:56:04.872771');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 13:56:04.886574', '2022-05-15 13:56:04.886574');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 13:56:04.895383', '2022-05-15 13:56:04.895383'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 13:56:04.895383', '2022-05-15 13:56:04.895383')[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (39.5ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (2.4ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.8ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (2.0ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 13:56:05.117361"], ["updated_at", "2022-05-15 13:56:05.117361"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 13:56:05.124419"], ["updated_at", "2022-05-15 13:56:05.124419"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mMerchant Load (0.3ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.4ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (2.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (8.4ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:41:42.616368', '2022-05-15 15:41:42.616368'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:41:42.616368', '2022-05-15 15:41:42.616368');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:41:42.625834', '2022-05-15 15:41:42.625834');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:41:42.634597', '2022-05-15 15:41:42.634597'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:41:42.634597', '2022-05-15 15:41:42.634597')[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.7ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (18.8ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.6ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (1.5ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 15:41:42.747639"], ["updated_at", "2022-05-15 15:41:42.747639"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 15:41:42.754389"], ["updated_at", "2022-05-15 15:41:42.754389"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.7ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (1.8ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (11.2ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:49:27.747980', '2022-05-15 15:49:27.747980'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:49:27.747980', '2022-05-15 15:49:27.747980');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:49:27.757313', '2022-05-15 15:49:27.757313');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:49:27.764996', '2022-05-15 15:49:27.764996'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:49:27.764996', '2022-05-15 15:49:27.764996')[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.0ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (20.9ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.6ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.4ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (1.9ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 15:49:27.993545"], ["updated_at", "2022-05-15 15:49:27.993545"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.3ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.6ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 15:49:28.000121"], ["updated_at", "2022-05-15 15:49:28.000121"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (2.0ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.1ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (11.2ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:50:41.627815', '2022-05-15 15:50:41.627815'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:50:41.627815', '2022-05-15 15:50:41.627815');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:50:41.638122', '2022-05-15 15:50:41.638122');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:50:41.646726', '2022-05-15 15:50:41.646726'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:50:41.646726', '2022-05-15 15:50:41.646726')[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.0ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (20.3ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.6ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.5ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (1.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 15:50:41.768690"], ["updated_at", "2022-05-15 15:50:41.768690"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 15:50:41.776122"], ["updated_at", "2022-05-15 15:50:41.776122"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (2.0ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.1ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (11.4ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:51:41.954968', '2022-05-15 15:51:41.954968'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:51:41.954968', '2022-05-15 15:51:41.954968');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:51:41.965186', '2022-05-15 15:51:41.965186');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:51:41.974054', '2022-05-15 15:51:41.974054'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:51:41.974054', '2022-05-15 15:51:41.974054')[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (22.4ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.5ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (1.9ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.3ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (12.2ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:54:47.952681', '2022-05-15 15:54:47.952681'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:54:47.952681', '2022-05-15 15:54:47.952681');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:54:47.963773', '2022-05-15 15:54:47.963773');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:54:47.971242', '2022-05-15 15:54:47.971242'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:54:47.971242', '2022-05-15 15:54:47.971242')[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.0ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (22.6ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.5ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (1.8ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 15:54:48.087974"], ["updated_at", "2022-05-15 15:54:48.087974"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.3ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.9ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 15:54:48.094510"], ["updated_at", "2022-05-15 15:54:48.094510"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.5ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (1.8ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "schema_sha1"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (2.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.1ms)[0m  [1m[35mALTER TABLE "merchants" DISABLE TRIGGER ALL;ALTER TABLE "disburses" DISABLE TRIGGER ALL;ALTER TABLE "orders" DISABLE TRIGGER ALL;ALTER TABLE "shoppers" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (13.0ms)[0m  [1m[31mDELETE FROM "disburses";
+DELETE FROM "merchants";
+DELETE FROM "orders";
+DELETE FROM "shoppers";
+INSERT INTO "merchants" ("id", "name", "email", "cif", "created_at", "updated_at") VALUES (5506866, 'Sorocaba Phones', 'MyString', 'MyString', '2022-05-15 15:56:40.637436', '2022-05-15 15:56:40.637436'), (425547414, 'Elisa Shoes', 'MyString', 'MyString', '2022-05-15 15:56:40.637436', '2022-05-15 15:56:40.637436');
+INSERT INTO "orders" ("id", "amount", "completed_at", "shopper_id", "merchant_id", "created_at", "updated_at") VALUES (845309360, 49.99, '2022-05-12 16:53:28', 336935152, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (728445976, 55.0, '2022-05-09 16:53:28', 219965772, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (476841089, 299.99, '2022-05-10 16:53:28', 336935152, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (34115876, 400.0, '2022-05-15 16:53:28', 336935152, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (890216887, 100.0, '2022-04-15 16:53:28', 336935152, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (738652175, 1500.0, NULL, 219965772, 5506866, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (453099672, 100.0, '2022-05-13 16:53:28', 336935152, 425547414, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619'), (197057803, 1000.0, '2022-05-15 16:53:28', 336935152, 425547414, '2022-05-15 15:56:40.648619', '2022-05-15 15:56:40.648619');
+INSERT INTO "shoppers" ("id", "name", "email", "nif", "created_at", "updated_at") VALUES (336935152, 'Peter Parra', 'MyString', 'MyString', '2022-05-15 15:56:40.659895', '2022-05-15 15:56:40.659895'), (219965772, 'Joseph Viera', 'MyString', 'MyString', '2022-05-15 15:56:40.659895', '2022-05-15 15:56:40.659895')[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.1ms)[0m  [1m[35mALTER TABLE "merchants" ENABLE TRIGGER ALL;ALTER TABLE "disburses" ENABLE TRIGGER ALL;ALTER TABLE "orders" ENABLE TRIGGER ALL;ALTER TABLE "shoppers" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (20.7ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_constraint SET convalidated=false WHERE conname = ''%I''; ALTER TABLE %I VALIDATE CONSTRAINT %I;',
+    constraint_name,
+    table_name,
+    constraint_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_week
+---------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates
+------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_orders
+-------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-04-18 00:00:00' and end_date ='2022-04-24 00:00:00') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.6ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-04-18 00:00:00"], ["completed_at", "2022-04-24 00:00:00"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_without_dates_one_exact_week
+---------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+DisburseTest: test_calculate_calculate_disbursements_with_valid_dates_and_orders
+--------------------------------------------------------------------------------
+  [1m[36mDisburse Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "disburses" WHERE (init_date ='2022-05-09 00:00:00' and end_date ='2022-05-15 23:59:59') LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mOrder Load (0.5ms)[0m  [1m[34mSELECT "orders".* FROM "orders" WHERE "orders"."completed_at" BETWEEN $1 AND $2 ORDER BY "orders"."merchant_id" ASC[0m  [["completed_at", "2022-05-09 00:00:00"], ["completed_at", "2022-05-15 23:59:59"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mDisburse Create (1.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 4], ["amount", "798.14"], ["merchant_id", 5506866], ["created_at", "2022-05-15 15:56:40.790497"], ["updated_at", "2022-05-15 15:56:40.790497"], ["feed", "6.84"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.5ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mDisburse Create (0.7ms)[0m  [1m[32mINSERT INTO "disburses" ("init_date", "end_date", "orders", "amount", "merchant_id", "created_at", "updated_at", "feed") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["init_date", "2022-05-09 00:00:00"], ["end_date", "2022-05-15 23:59:59"], ["orders", 2], ["amount", "1090.65"], ["merchant_id", 425547414], ["created_at", "2022-05-15 15:56:40.797302"], ["updated_at", "2022-05-15 15:56:40.797302"], ["feed", "9.35"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 5506866], ["LIMIT", 1]]
+  [1m[36mMerchant Load (0.4ms)[0m  [1m[34mSELECT "merchants".* FROM "merchants" WHERE "merchants"."id" = $1 LIMIT $2[0m  [["id", 425547414], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m

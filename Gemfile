@@ -52,5 +52,13 @@ gem 'json', '~> 2.6', '>= 2.6.1'
 # serializer api
 gem 'active_model_serializers'
 
+# Rails-based Asynchronous Processes
+gem 'redis'
+gem 'redis-rails'
+gem 'sidekiq'
+# Scheduling a Background Job
+gem 'sidekiq-scheduler'
+
+
 
 

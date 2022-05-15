@@ -1,0 +1,12 @@
+:verbose: false
+:concurrency: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+:timeout: 30
+
+:queues:
+  - default
+
+:schedule:
+  CalculateJob:
+    every: ['7d', first_in: '2022-05-09']
+    queue: default
+    enabled: true

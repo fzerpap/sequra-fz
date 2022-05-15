@@ -10,9 +10,10 @@ class Api::V1::DisbursesController < ApplicationController
     if init_date.nil? || end_date.nil?
       render json: {message: "Theses dates are not valids"}
     else
-      @disburses = Disburse.get_week_merchant(init_date, end_date, merchant_id)
+      @result = Disburse.get_week_merchant(init_date, end_date, merchant_id)
 
-      render json: @disburses
+      render json: @result
+      #render json: {status: 200, data: @disburses}
     end
 
   end
@@ -25,14 +26,20 @@ class Api::V1::DisbursesController < ApplicationController
 
     init_date = params[:init_date].to_datetime rescue nil
     end_date = params[:end_date].to_datetime rescue nil
-
+    
+    #validdate dates
     if init_date.nil? || end_date.nil?
-      render json: {message: "Theses dates are not valids"}
-    else
-      result = Disburse.calculate_disbursements(init_date, end_date)
-
-      render json: {message: result}
+      @result = {status: 400, message:"Theses dates are not valids"}
+    elsif Disburse.validate_week(init_date, end_date) != 'ok'
+      @result = {status: 400, message: Disburse.validate_week(init_date, end_date)} 
+    elsif Disburse.where('init_date =? and end_date =?',init_date, end_date).any?
+      @result = {status: 202, message: 'Info: The calculations were already made for those dates'}
     end
+    if @result.nil?
+      # invocate backgroun job calculate
+      @result = CalculateJob.perform_later(init_date, end_date)
+    end
+    render json: @result
 
 
   end

@@ -6,7 +6,7 @@ class Shopper < ApplicationRecord
 
     # get the data shoppers since json, only those not exist in shoppers table
     def self.import()
-        return 'Error: The json shoppers file not exist' if !File.exist?('./db/dataset/shoppers.json')
+        return {status: 400, message: 'Error: The json shoppers file not exist'} if !File.exist?('./db/dataset/shoppers.json')
         
         file = File.read('./db/dataset/shoppers.json')
         shoppers_json = JSON.parse(file)['RECORDS']
@@ -18,7 +18,7 @@ class Shopper < ApplicationRecord
             end
 
         end
-        return 'Json Soppers imported sucessfull'
+        return {status: 200, message: 'Json Soppers imported sucessfull'}
 
     end
 

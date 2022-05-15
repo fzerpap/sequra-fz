@@ -4,7 +4,7 @@ class Order < ApplicationRecord
 
     # get the data orders since json, only merchant_id exist in merchants and shopper_id exist in shoppers table
     def self.import()
-      return 'Error: The json orders file not exist' if !File.exist?('./db/dataset/orders.json')
+      return {status: 400, message: 'Error: The json orders file not exist'} if !File.exist?('./db/dataset/orders.json')
 
       # delete all orders
       delete_all
@@ -22,7 +22,7 @@ class Order < ApplicationRecord
           end
 
       end
-      return 'Json Orders imported sucessfull'
+      return {status: 200, message: 'Json Orders imported sucessfull'}
 
     end
 end

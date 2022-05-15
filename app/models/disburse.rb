@@ -6,7 +6,7 @@ class Disburse < ApplicationRecord
   def self.calculate_disbursements(init_date=nil, end_date=nil)
     # Valid dates
     msg = validate_week(init_date, end_date)
-    return msg if msg != 'ok'
+    return {status: 400, message: msg} if msg != 'ok'
 
     if self.where('init_date =? and end_date =?',init_date, end_date).any?
       return 'Error: The calculations were already made for those dates'
@@ -15,7 +15,7 @@ class Disburse < ApplicationRecord
     # get the orders between dates and transfor in array
     orders = Order.where(completed_at: init_date..end_date).order(:merchant_id).map {|u| u }
     if orders.blank?
-      return "Error: There aren't orders for those dates"
+      return {status: 400, message:"Error: There aren't orders for those dates"}
     end
     
     # calculate the disbursements for every merchant
@@ -57,7 +57,7 @@ class Disburse < ApplicationRecord
   def self.get_week_merchant(init_date, end_date, merchant_id)
     # Valid dates
     msg = validate_week(init_date, end_date)
-    return msg if msg != 'ok'
+    return {status: 400, message: msg} if msg != 'ok'
 
     if !merchant_id.blank?
       disburses = where('init_date =? and end_date=? and merchant_id=?',init_date, end_date, merchant_id).order(:merchant_id)
@@ -65,15 +65,15 @@ class Disburse < ApplicationRecord
       disburses = where('init_date =? and end_date=?',init_date, end_date).order(:merchant_id)
 
     end
-    return disburses
+    return {status: 200, data: disburses}
 
   end
 
-  private
   
   # validate that the dates define a week between manday and sunday
   def self.validate_week(init_date, end_date)
     return 'Error: params empty' if init_date.nil? || end_date.nil?
+    return 'Error: date invalid' if init_date > end_date
     if  init_date.strftime('%A') != 'Monday' || end_date.strftime('%A') != 'Sunday' || (end_date.to_date - init_date.to_date) != 6
       return 'Error: Dates invalid. Only accept dates betwwen monday and sunday, for one week'
     else 

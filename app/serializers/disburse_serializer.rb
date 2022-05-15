@@ -6,7 +6,9 @@ class DisburseSerializer < ActiveModel::Serializer
     #  h[:init_date] = I18n.l(object.init_date.to_time.iso8601)
     #end
 
-    belongs_to :merchant
+    belongs_to :merchant do
+      link(:related) { api_v1_merchant_url( object.id ) }
+    end
   
     #has_many :merchants do
       #link(:related) {api_v1_city_url(object.id)}

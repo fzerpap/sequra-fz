@@ -1,11 +1,17 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
+
+  mount Sidekiq::Web => '/sidekiq'
   
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       resources :orders
       resources :shoppers
       resources :merchants
-      resources :disburses
+      resources :disburses do
+        resource :merchant
+      end
       resources :imports, only: [:index]
 
       #post 'disburses/calculate', to: 'disburses#calculate', as: :calculate_disbursements
@@ -23,3 +29,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
 end
+
+
+ 
+

@@ -5,25 +5,25 @@ class DisburseTest < ActiveSupport::TestCase
   # Tests for calculate_disbursements method
   test "calculate calculate_disbursements without dates" do
     result = Disburse.calculate_disbursements()
-    assert_equal('Error: params empty',result)
+    assert_equal({status: 400, message: 'Error: params empty'},result)
   end
 
   test "calculate calculate_disbursements without dates one week" do
     result = Disburse.calculate_disbursements('2022-05-10'.to_datetime, '2022-05-10'.to_datetime+4)
 
-    assert_equal('Error: Dates invalid. Only accept dates betwwen monday and sunday, for one week',result)
+    assert_equal({status: 400, message: 'Error: Dates invalid. Only accept dates betwwen monday and sunday, for one week'},result)
   end
 
   test "calculate calculate_disbursements without dates one exact week" do
     result = Disburse.calculate_disbursements('2022-05-08'.to_datetime, '2022-05-15'.to_datetime)
 
-    assert_equal('Error: Dates invalid. Only accept dates betwwen monday and sunday, for one week',result)
+    assert_equal({status: 400, message: 'Error: Dates invalid. Only accept dates betwwen monday and sunday, for one week'},result)
   end
 
   test "calculate calculate_disbursements without orders" do
     result = Disburse.calculate_disbursements('2022-04-18'.to_datetime, '2022-04-24'.to_datetime)
 
-    assert_equal("Error: There aren't orders for those dates",result)
+    assert_equal({status: 400, message: "Error: There aren't orders for those dates"},result)
   end
 
   test "calculate calculate_disbursements with valid dates and orders" do
