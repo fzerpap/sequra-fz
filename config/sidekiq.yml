@@ -7,6 +7,6 @@
 
 :schedule:
   CalculateJob:
-    every: ['7d', first_in: '2022-05-09']
+    #every: ['7d', first_in: '2022-05-09']
     queue: default
     enabled: true
